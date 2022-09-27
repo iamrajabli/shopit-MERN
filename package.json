@@ -1,0 +1,28 @@
+{
+  "name": "shopit-mern",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "mongoose": "^6.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "SET NODE_ENV=DEVELOPMENT& nodemon backend/server",
+    "prod": "SET NODE_ENV=PRODUCTION& nodemon backend/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamrajabli/shopit-MERN.git"
+  },
+  "keywords": [],
+  "author": "Hikmat Rajabli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iamrajabli/shopit-MERN/issues"
+  },
+  "homepage": "https://github.com/iamrajabli/shopit-MERN#readme"
+}
