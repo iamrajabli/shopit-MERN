@@ -5,7 +5,7 @@ const app = express()
 app.use(express.json())
 
 // Import all routes
-const products = require('./routes/product')
+const products = require('./routes/product.router')
 
 
 app.use('/api/v1', products)
