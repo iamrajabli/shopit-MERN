@@ -1,6 +1,8 @@
 const Product = require('../models/product.model')
 const ErrorHandler = require('../utils/errorHandler')
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors.middleware')
+const APIFeatures = require('../utils/apiFeatures')
+
 
 // Create new product   =>  /api/v1/product/new
 exports.newProduct = catchAsyncErrors(async (req, res, next) => {
@@ -14,10 +16,18 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 })
 
 
-// Get all products    =>  /api/v1/products
+// Get all products    =>  /api/v1/products?keyword=text
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
 
-    const products = await Product.find()
+    const resPerPage = 3
+
+    const apiFeatures = new APIFeatures(Product.find(), req.query)
+        .search()
+        .filter()
+        .page(resPerPage)
+ 
+
+    const products = await apiFeatures.query
 
     res.status(200).json({
         success: true,
@@ -75,13 +85,6 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
     if (!product) {
         return next(new ErrorHandler('Product not found', 404))
     }
-
-    // if (!product) {
-    //     return res.status(404).json({
-    //         success: false,
-    //         message: 'Product not found'
-    //     })
-    // }
 
     await product.deleteOne()
 
