@@ -77,8 +77,6 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
     // Create reset password url
     const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/password/reset/${resetToken}`
 
-    console.log(resetUrl);
-
     const message = `Your password reset token is as follow:\n\n${resetUrl}\n\nIf you have not requested this email, then ignore it`
 
     try {
@@ -129,17 +127,174 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     user.resetPasswordExpire = undefined
     await user.save()
 
-
-    // await User.updateOne({ resetPasswordToken }, {
-    //     $set: {
-    //         password: req.body.password,
-    //         resetPasswordToken: undefined,
-    //         resetPasswordExpire: undefined
-    //     }
-    // })
-
     sendToken(res, 200, user)
 })
+
+
+exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
+    const user = await User.findById(req.user._id)
+
+    res.status(200).json({
+        success: true,
+        user
+    })
+
+})
+
+// UPDATE USER PASSWORD
+exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
+
+    const user = await User.findById(req.user._id).select('+password')
+
+    // OLD PASS CONTROL
+    const isPasswordMatchedForOldPassword = await user.comparePassword(req.body.oldPassword)
+
+    if (!isPasswordMatchedForOldPassword) {
+        return next(new ErrorHandler('Old password is incorrect', 400))
+    }
+
+    // NEW PASS CONTROL
+    const isPasswordMatchedForNewPassword = await user.comparePassword(req.body.newPassword)
+
+    if (isPasswordMatchedForNewPassword) {
+        return next(new ErrorHandler('The new password cannot be the same as the old password', 400))
+    }
+
+    // PASS UPDATE
+    user.password = req.body.newPassword
+    await user.save()
+
+    sendToken(res, 200, user)
+
+})
+
+// UPDATE PROFILE
+exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
+
+    const { name, email } = req.body
+
+    // VALIDATE EMPTY
+    if (!name || !email) {
+        return next(new ErrorHandler(`All ares are required`))
+    }
+    const newUserData = { name, email }
+
+    // PASSWORD CONTROL
+    const user = await User.findById(req.user._id).select('+password')
+
+    const isPasswordMatched = await user.comparePassword(req.body.password)
+
+    if (!isPasswordMatched) {
+        return next(new ErrorHandler('Password is incorrect', 400))
+    }
+
+    // IF PASSWORD IS CORRECT - UPDATE DATA
+    await User.findByIdAndUpdate(req.user._id, newUserData, {
+        new: true,
+        runValidators: true
+    })
+
+    res.status(200).json({
+        success: true
+    })
+
+})
+
+
+exports.allUsers = catchAsyncErrors(async (req, res, next) => {
+
+    const users = await User.find()
+
+    res.status(200).json({
+        success: true,
+        users
+    })
+
+
+})
+exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
+
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+        return next(new ErrorHandler(`User does not found with id: ${req.params.id}`))
+    }
+
+    res.status(200).json({
+        success: true,
+        user
+    })
+
+
+})
+
+
+exports.updateUser = catchAsyncErrors(async (req, res, next) => {
+
+    const { name, email, role } = req.body
+
+    // VALIDATE EMPTY
+    if (!name || !email || !role) {
+        return next(new ErrorHandler(`All ares are required`))
+    }
+
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+        return next(new ErrorHandler(`User does not found with id: ${req.params.id}`))
+    }
+
+    const newUserData = { name, email, role }
+
+    // ADMIN PASSWORD CONTROL
+    const admin = await User.findById(req.user._id).select('+password')
+
+    const isPasswordMatched = await admin.comparePassword(req.body.password)
+
+    if (!isPasswordMatched) {
+        return next(new ErrorHandler('Password is incorrect', 400))
+    }
+
+    // IF PASSWORD IS CORRECT - UPDATE USER DATA
+    await User.findByIdAndUpdate(req.params.id, newUserData, {
+        new: true,
+        runValidators: true
+    })
+
+    res.status(200).json({
+        success: true
+    })
+})
+
+
+exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
+
+    if (!req.body.password) {
+        return next(new ErrorHandler(`Password is required!`))
+    }
+
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+        return next(new ErrorHandler(`User does not found with id: ${req.params.id}`))
+    }
+
+    // ADMIN PASSWORD CONTROL
+    const admin = await User.findById(req.user._id).select('+password')
+
+    const isPasswordMatched = await admin.comparePassword(req.body.password)
+
+    if (!isPasswordMatched) {
+        return next(new ErrorHandler('Password is incorrect', 400))
+    }
+
+    await user.remove()
+
+    res.status(200).json({
+        success: true
+    })
+})
+
 
 
 // Logout User
