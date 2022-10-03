@@ -8,18 +8,18 @@ const {
     updateProduct,
     deleteProduct } = require('../controllers/product.controller')
 
-const { isAuthenticatedUser } = require('../middlewares/auth.middleware')
+const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth.middleware')
 
 
-router.get('/products', getProducts)
+router.get('/products', isAuthenticatedUser, getProducts)
 
 router.get('/product/:id', getSingleProduct)
 
-router.post('/admin/product/new', isAuthenticatedUser, newProduct)
+router.post('/admin/product/new', isAuthenticatedUser, authorizeRoles('admin'), newProduct)
 
-router.put('/admin/product/edit/:id', isAuthenticatedUser, updateProduct)
+router.put('/admin/product/edit/:id', isAuthenticatedUser, authorizeRoles('admin'), updateProduct)
 
-router.delete('/admin/product/remove/:id', isAuthenticatedUser, deleteProduct)
+router.delete('/admin/product/remove/:id', isAuthenticatedUser, authorizeRoles('admin'), deleteProduct)
 
 
 module.exports = router

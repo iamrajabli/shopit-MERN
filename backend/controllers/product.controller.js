@@ -7,6 +7,8 @@ const APIFeatures = require('../utils/apiFeatures')
 // Create new product   =>  /api/v1/product/new
 exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 
+    req.body.user = req.user.id
+
     const product = await Product.create(req.body)
 
     res.status(201).json({
@@ -25,7 +27,7 @@ exports.getProducts = catchAsyncErrors(async (req, res, next) => {
         .search()
         .filter()
         .page(resPerPage)
- 
+
 
     const products = await apiFeatures.query
 
