@@ -9,12 +9,17 @@ import {
     PRODUCT_DETAILS_FAIL
 } from '../constants/product.constants'
 
-export const getProducts = () => async (dispatch) => {
+export const getProducts = (page = 1, keyword = '', price, category) => async (dispatch) => {
     try {
-
         dispatch({ type: ALL_PRODUCTS_REQUEST })
 
-        const { data } = await axios.get(process.env.REACT_APP_BASE_URL + '/api/v1/products')
+        let link = `${process.env.REACT_APP_BASE_URL}/api/v1/products?keyword=${keyword}&page=${page}&price[gte]=${price[0]}&price[lte]=${price[1]}`
+
+        if (category) {
+            link += `&category=${category}`
+        }
+
+        const { data } = await axios.get(link)
 
         dispatch({
             type: ALL_PRODUCTS_SUCCESS,

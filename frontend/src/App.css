@@ -623,3 +623,24 @@ ul.CTAs a {
     font-size: 0.8rem;
     color: grey;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination__wrapper {
+    border: 1px solid rgba(128, 128, 128, 0.192);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.pagination__item {
+    padding: 8px 20px;
+    background-color: #f8ce0b;
+    color: white;
+    font-size: 20px;
+}
