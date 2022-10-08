@@ -6,15 +6,14 @@ import Product from './product/Product';
 import Loader from './layout/Loader';
 import { useAlert } from 'react-alert';
 import Pagination from "react-js-pagination";
-import { useParams } from 'react-router-dom';
-// import Slider from 'react-rangeslider'
-// import 'react-rangeslider/lib/index.css'
+import { useNavigate, useParams } from 'react-router-dom';
 import Slider from '@mui/material/Slider';
 
 const Home = () => {
 
     const dispatch = useDispatch()
     const alert = useAlert()
+
     const {
         products,
         productsCount,
@@ -27,6 +26,9 @@ const Home = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [price, setPrice] = useState([0, 1000])
     const [category, setCategory] = useState('')
+    const [rating, setRating] = useState(0)
+
+
 
     const categories = [
         'All',
@@ -44,14 +46,14 @@ const Home = () => {
         'Home'
     ]
 
- 
+
     useEffect(() => {
 
         if (error) {
             return alert.error(error)
         }
 
-        dispatch(getProducts(currentPage, keyword, price, category))
+        dispatch(getProducts(currentPage, keyword, price, category, rating))
 
     }, [dispatch,
         error,
@@ -59,7 +61,8 @@ const Home = () => {
         currentPage,
         keyword,
         price,
-        category])
+        category,
+        rating])
 
     const setCurrentPageNo = (page) => {
         setCurrentPage(page)
@@ -69,17 +72,13 @@ const Home = () => {
         setPrice(value)
     }
 
-
-  
-    let count = productsCount
-    // if (keyword) {
-    //     count = filteredProductsCount
-    // }
-
-
-    // useEffect(() => {
-    //     console.log(count);
-    // }, [count])
+    const resetFilters = () => {
+        setCurrentPage('')
+        setPrice([0, 1000])
+        setCategory('')
+        setRating(0)
+        setCurrentPage(1)
+    }
 
 
     return (
@@ -116,6 +115,33 @@ const Home = () => {
                                 ))}
                             </ul>
                         </div>
+
+                        <div className="ratings mt-5">
+                            <h2>Ratings</h2>
+
+                            <ul className='p-0'>
+                                {[5, 4, 3, 2, 1].map(star => (
+                                    <li
+                                        onClick={() => setRating(star)}
+                                        style={{ cursor: 'pointer', listStyleType: 'none' }}
+                                        key={star}>
+                                        <div className="rating-outer">
+                                            <div
+                                                className="rating-inner"
+                                                style={{ width: `${star * 20}%` }}></div>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="category mt-5">
+                            <button
+                                onClick={resetFilters}
+                                className='btn btn-warning'>
+                                Reset
+                            </button>
+                        </div>
                     </div>
                     {loading ? <Loader /> :
                         <div className="col-9">
@@ -128,7 +154,7 @@ const Home = () => {
                     }
                 </div>
             </section>
-            {count > resPerPage &&
+            {filteredProductsCount > resPerPage &&
                 <div className="d-flex justify-content-center mt-5">
                     <Pagination
                         activePage={currentPage}
