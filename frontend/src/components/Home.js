@@ -6,7 +6,7 @@ import Product from './product/Product';
 import Loader from './layout/Loader';
 import { useAlert } from 'react-alert';
 import Pagination from "react-js-pagination";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Slider from '@mui/material/Slider';
 
 const Home = () => {
@@ -21,6 +21,7 @@ const Home = () => {
         error,
         loading,
         filteredProductsCount } = useSelector(state => state.products)
+
 
     const { keyword } = useParams()
     const [currentPage, setCurrentPage] = useState(1)
@@ -45,7 +46,6 @@ const Home = () => {
         'Outdoor',
         'Home'
     ]
-
 
     useEffect(() => {
 

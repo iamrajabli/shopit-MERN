@@ -13,7 +13,7 @@ export const getProducts = (page = 1, keyword = '', price, category, rating = 0)
     try {
         dispatch({ type: ALL_PRODUCTS_REQUEST })
 
-        let link = `${process.env.REACT_APP_BASE_URL}/api/v1/products?keyword=${keyword}&page=${page}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${rating}`
+        let link = `${process.env.REACT_APP_BASE_URL}/products?keyword=${keyword}&page=${page}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${rating}`
 
         if (category) {
             link += `&category=${category}`
@@ -39,7 +39,7 @@ export const getProductDetails = (id) => async (dispatch) => {
 
         dispatch({ type: PRODUCT_DETAILS_REQUEST })
 
-        const { data } = await axios.get(process.env.REACT_APP_BASE_URL + '/api/v1/product/' + id)
+        const { data } = await axios.get(process.env.REACT_APP_BASE_URL + '/product/' + id)
 
         dispatch({
             type: PRODUCT_DETAILS_SUCCESS,
