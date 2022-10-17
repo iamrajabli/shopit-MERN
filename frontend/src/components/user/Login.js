@@ -24,14 +24,14 @@ const Login = () => {
         if (isAuthenticaded) {
             navigate('/')
         }
-        if (error) {
+        if (error && !error.includes('Login first to access this resource')) {
             alert.error(error)
             dispatch(clearErros())
         }
 
     }, [dispatch, alert, isAuthenticaded, error, navigate])
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         dispatch(login(email, password))

@@ -1,10 +1,15 @@
 import {
-    LOGIN_REQUEST,
-    LOGIN_SUCCESS,
-    LOGIN_FAIL,
-    REGISTER_FAIL,
-    REGISTER_REQUEST,
-    REGISTER_SUCCESS,
+    LOGIN_USER_REQUEST,
+    LOGIN_USER_SUCCESS,
+    LOGIN_USER_FAIL,
+    REGISTER_USER_FAIL,
+    REGISTER_USER_REQUEST,
+    REGISTER_USER_SUCCESS,
+    LOAD_USER_REQUEST,
+    LOAD_USER_SUCCESS,
+    LOAD_USER_FAIL,
+    LOGOUT_USER_SUCCESS,
+    LOGOUT_USER_FAIL,
     CLEAR_ERRORS
 } from '../constants/user.constants'
 
@@ -12,15 +17,17 @@ import {
 export const authReducer = (state = { user: {} }, action) => {
     switch (action.type) {
 
-        case LOGIN_REQUEST:
-        case REGISTER_REQUEST:
+        case LOGIN_USER_REQUEST:
+        case REGISTER_USER_REQUEST:
+        case LOAD_USER_REQUEST:
             return {
                 loading: true,
                 isAuthenticaded: false
             }
 
-        case LOGIN_SUCCESS:
-        case REGISTER_SUCCESS:
+        case LOGIN_USER_SUCCESS:
+        case REGISTER_USER_SUCCESS:
+        case LOAD_USER_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -28,16 +35,36 @@ export const authReducer = (state = { user: {} }, action) => {
                 user: action.payload
             }
 
-        case LOGIN_FAIL:
-        case REGISTER_FAIL:
+        case LOGIN_USER_FAIL:
+        case REGISTER_USER_FAIL:
             return {
                 ...state,
                 loading: false,
-                usAuthenticaded: false,
+                isAuthenticaded: false,
                 user: null,
                 error: action.payload
             }
 
+        case LOGOUT_USER_SUCCESS:
+            return {
+                loading: false,
+                isAuthenticaded: false,
+                user: null,
+            }
+
+        case LOGOUT_USER_FAIL:
+            return {
+                ...state,
+                error: action.payload
+            }
+
+        case LOAD_USER_FAIL:
+            return {
+                loading: false,
+                isAuthenticaded: false,
+                user: null,
+                error: action.payload
+            }
         case CLEAR_ERRORS:
             return {
                 ...state,

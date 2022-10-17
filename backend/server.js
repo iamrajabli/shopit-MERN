@@ -22,7 +22,6 @@ cloudinary.config({
 
 // Connection to database
 connectDatabase()
-console.log(process.env.CLOUDINARY_API_SECRET);
 
 // Server listening
 const server = app.listen(process.env.PORT, () => {

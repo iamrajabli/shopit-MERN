@@ -18,8 +18,6 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
     const { name, email, password } = req.body
 
-    console.log(name, email, password);
-
     const user = await User.create({
         name,
         email,
@@ -57,8 +55,17 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Invalid Email or Password', 401))
     }
 
-    // Send token
+
     sendToken(res, 200, user)
+})
+
+exports.cookie = catchAsyncErrors(async (req, res, next) => {
+    res.cookie('token', 'refreshToken', { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true })
+
+    res.status(200)
+        .json({
+            success: true,
+        })
 })
 
 // Forgot password /api/v1/password/forgot
